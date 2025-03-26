@@ -1,2 +1,4 @@
 moto
 scikit-learn
+pytest
+boto3
