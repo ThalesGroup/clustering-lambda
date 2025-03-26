@@ -1,2 +1,2 @@
 moto
-sklearn
+scikit-learn
