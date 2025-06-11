@@ -1,4 +1,4 @@
-# https://github.com/imperva/clustering-lambda
+# https://github.com/ThalesGroup/clustering-lambda
 import csv
 import gzip
 import json
@@ -89,6 +89,7 @@ def build_mat(day: str):
     )
     for key in [key["Key"] for key in objects.get("Contents", [])]:
         tmp_file = tempfile.NamedTemporaryFile(suffix=".csv.gz")
+        logging.info(f"Going to download file: {key}")
         s3.download_file(get_bucket(), key, tmp_file.name)
         with gzip.open(tmp_file.name, "rt") as f:
             for idx, line in enumerate(f):
@@ -104,6 +105,8 @@ def build_mat(day: str):
                 limit_reached = idx == get_value("max-records")
                 if limit_reached:
                     break
+                if idx > 0 and idx % 100_000 == 0:
+                    logging.info(f"Processed {int(idx / 1_000)}k records")
         if limit_reached:
             logging.info(f"Limit reached: {get_value("max-records")}")
             break

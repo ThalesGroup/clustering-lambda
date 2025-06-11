@@ -14,3 +14,4 @@ do-not-commit/*
 **/.pytest_cache
 aws/**/config
 **/__pycache__/
+examples/athena_demo/example_data.jsonl.gz
