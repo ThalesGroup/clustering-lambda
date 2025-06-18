@@ -124,9 +124,9 @@ def cluster_data(mat):
     if mat is not None and mat.shape[0] > 0 and mat.shape[1] > 0:
         model = get_clustering_algorithm()
         result = model.fit_predict(mat)
-        return result
     else:
-        return []
+        result = []
+    return result
 
 
 def get_clustering_algorithm() -> ClusterMixin:
@@ -165,8 +165,10 @@ def write_results(keys: Dict[int, object], result, day: str):
             if cluster not in dict_result:
                 dict_result[cluster] = []
             dict_result[cluster].append(keys[idx])
-    logging.info(f"clusters: {len(dict_result)}")
-    logging.info(f"cluster sizes: {[len(dict_result[k]) for k in dict_result]}")
+    num_of_clusters = len(dict_result)
+    cluster_sizes = [len(dict_result[k]) for k in dict_result]
+    logging.info(f"clusters: {num_of_clusters}")
+    logging.info(f"cluster sizes: {cluster_sizes}")
     tmp_file = tempfile.NamedTemporaryFile(suffix=".csv.gz")
     with gzip.open(tmp_file.name, "wt") as f:
         writer = csv.writer(f, delimiter=",")
@@ -178,7 +180,7 @@ def write_results(keys: Dict[int, object], result, day: str):
     output_key = get_output_key(day)
     logging.info(output_key)
     s3.upload_file(tmp_file.name, get_bucket(), output_key)
-    return len(dict_result), sum([len(dict_result[k]) for k in dict_result])
+    return num_of_clusters, sum(cluster_sizes)
 
 
 # noinspection PyUnusedLocal
